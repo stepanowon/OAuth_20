@@ -67,34 +67,6 @@ E. 추가/개선할 사항..
   - OAuth 2.0 에서는 에러 발생시 WWW-Authenticate 헤더를 통해 응답하도록 하고 있으나
       Google, Facebook은 다른 방식을 사용하고 있다. 본 샘플은 facebook 스타일(?)로 작성하였다.
 
-
-   If the protected resource request contains an invalid access token or
-   is malformed, the resource server MUST include the HTTP
-   "WWW-Authenticate" response header field.  The "WWW-Authenticate"
-   header field uses the framework defined by [RFC2617] as follows:
- 
-
-     challenge       = "OAuth" RWS token-challenge
-
-     token-challenge = realm
-                       [ CS error ]
-                       [ CS error-desc ]
-                       [ CS error-uri ]
-                       [ CS scope ]
-                       [ CS 1#auth-param ]
-
-     error           = "error" "=" <"> token <">
-     error-desc      = "error_description" "=" quoted-string
-     error-uri       = "error_uri" = <"> URI-Reference <">
-     scope           = quoted-value /
-                       <"> quoted-value *( 1*SP quoted-value ) <">
-     quoted-value    = 1*quoted-char
-
-   For example:
-
-     HTTP/1.1 401 Unauthorized
-     WWW-Authenticate: OAuth realm='Example Service', error='expired-token'
-
   - OAuth2.0 의 처리과정 중 Web Server flow 와 user agent flow만 처리하였다.
      * password credential과 client credential 방식은 작성하지 않았다. 대신 
        com.multi.oauth2.provider.view.controller.OAuth2Controller 클래스의 280번 라인에서 
