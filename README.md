@@ -3,20 +3,20 @@ OAuth_20
 
 Samples for OAuth 2.0 Provider &amp; Client 
 
-<<OAuth2 Provider & Consumer Sample입니다.>>
+OAuth2 Provider & Consumer Sample입니다.
 
-A. 환경
+A. environment
 
   - Oracle 10g Express
   - Java 1.6 + Spring 3.1 + Eclipse(indigo) + Maven + iBatis 2.0 + Tomcat 6.0(HTTP Port 8000)
 
-B. 구성 요소
+B. project
 
-  - oauth2provider : 클라이언트
+  - oauth2provider : 인증서버 & 리소스 서버
   - oauth2client : web server flow 클라이언트
   - oauth2client_agentflow : User Agent flow 클라이언트 
 
-C. 설정해야 할 값
+C. configuration
 
   - table 생성
     - DB는 oracle 10g express에 oauth2/oauth2 계정을 생성하여야 함.
