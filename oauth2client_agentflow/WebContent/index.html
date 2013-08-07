@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript" src="js/oauth2util.js"></script>
+<script type="text/javascript">
+$(function() {
+	var param = {
+		client_id : "e2e1c234-aa02-4bd2-ae75-329edac4c1bb",
+		redirect_uri : "http://localhost:8000/oauth2client_agentflow/callback.html",
+		response_type : "token",
+		scope : "calendar,personalinfo,readboard",
+		state : window.createNonce(5)
+	};
+	
+	sessionStorage.setItem('state', param.state);
+	
+	var authorizeUrl = "http://localhost:8000/oauth2provider/oauth2/auth";
+	
+	$("#authorize").click(function() {
+		location.href=authorizeUrl + "?" + $.param(param);		
+	});
+});
+</script>
+</head>
+<body>
+Client ID : e2e1c234-aa02-4bd2-ae75-329edac4c1bb<br>
+Client Secret : 566d730e9a37fb1edad370f7f93ac1ce24b99644<br>
+Client Name : UserAgent Test App<br>
+Description : UserAgent Test App 입니다.<br>
+Client Type : M<br>
+Client URL : http://localhost:8000<br>
+Redirect URI : http://localhost:8000/oauth2client_agentflow/callback.html<br>
+Scope : calendar,personalinfo,readboard<br>
+Registration Date : Tue Aug 06 19:23:41 KST 2013<br><br>
+<button id="authorize">Authorize!!</button>
+</body>
+</html>

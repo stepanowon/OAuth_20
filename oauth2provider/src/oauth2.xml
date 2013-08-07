@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="oauth2">
+	<typeAlias alias="clientVO" type="com.multi.oauth2.provider.vo.ClientVO" />
+	<typeAlias alias="tokenVO" type="com.multi.oauth2.provider.vo.TokenVO" />
+	<typeAlias alias="userVO" type="com.multi.oauth2.provider.vo.UserVO" />
+
+	<!--  Login을 위한 Map 시작 -->
+	<select id="login" resultClass="userVO" parameterClass="userVO">
+		SELECT userid, username, userno
+		FROM tbl_users
+		WHERE userid=#userid# AND password=#password#
+	</select>
+
+	<select id="userinfo" resultClass="userVO" parameterClass="userVO">
+		SELECT userid, username, userno, password
+		FROM tbl_users
+		WHERE userid=#userid#
+	</select>
+	<!--  Login을 위한 Map 끝 -->
+	
+	<!-- Client 관리 시작 -->
+	<select id="clientlist" resultClass="clientVO" parameterClass="userVO">
+		SELECT * FROM tbl_client WHERE userid=#userid#
+	</select>
+	
+	<select id="clientone" resultClass="clientVO" parameterClass="clientVO">
+		SELECT * FROM tbl_client
+		WHERE client_id=#client_id#
+	</select>
+	
+	<insert id="insertclient" parameterClass="clientVO">
+		INSERT INTO tbl_client 
+			(client_id, client_secret, userid, client_name, description,
+			     client_url, client_type, scope, redirect_uri) VALUES
+			(#client_id#, #client_secret#, #userid#, #client_name#, #description#,
+		     	#client_url#, #client_type#, #scope#, #redirect_uri#)
+	</insert>
+	
+	<delete id="deleteclient" parameterClass="string">
+		DELETE tbl_client 
+		WHERE client_id=#client_id#
+	</delete>
+	
+	<!-- Client 관리 끝 -->
+	
+	<!-- Token 관리 시작 -->
+	<!-- 토큰 생성 -->
+	<insert id="createToken" parameterClass="tokenVO">
+		INSERT INTO tbl_token 
+		(client_id, userid, access_token, refresh_token, token_type, scope, code, client_type, created_at, created_rt, expires_in)
+		VALUES
+		(#client_id#, #userid#, #access_token#, #refresh_token#, #token_type#, #scope#, #code#, #client_type#, #created_at#, #created_rt#, #expires_in#)
+	</insert>
+	
+	<select id="selectToken" parameterClass="tokenVO" resultClass="tokenVO">
+		SELECT * FROM tbl_token
+		WHERE access_token=#access_token#
+	</select>
+	
+	<select id="selectRefreshToken" parameterClass="tokenVO" resultClass="tokenVO">
+		SELECT * FROM tbl_token
+		WHERE refresh_token=#refresh_token#
+	</select>
+	
+	<select id="selectTokenByCode" parameterClass="tokenVO" resultClass="tokenVO">
+		SELECT * FROM tbl_token
+		WHERE code=#code#
+	</select>	
+	
+	<update id="updateAccessToken" parameterClass="tokenVO">
+		UPDATE tbl_token
+		SET access_token=#access_token#, created_at=#created_at#
+		WHERE refresh_token=#refresh_token#
+	</update>
+	
+	<delete id="deleteToken" parameterClass="tokenVO">
+		DELETE tbl_token
+		WHERE access_token=#access_token#
+	</delete>
+	
+	<!-- access_token이 생성된지 일정시간(밀리초:예-5일)이 지난 토큰은 주기적으로 삭제함-->
+	<delete id="deleteExpiredToken" parameterClass="java.lang.Long">
+		DELETE tbl_token
+		WHERE created_at &lt; GET_TIMESTAMP() - #longval#
+	</delete>
+	<!-- Token 관리 끝 -->
+</sqlMap>    
