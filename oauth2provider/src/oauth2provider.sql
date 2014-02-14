@@ -15,16 +15,16 @@ alter table tbl_users add constraint pk_users  primary key (userid);
  
 CREATE TABLE tbl_client
 (
-	client_id      	varchar2(100) not null,		--ÀÏ·Ã¹øÈ£:app °íÀ¯Å°
+	client_id      	varchar2(100) not null,		--ï¿½Ï·Ã¹ï¿½È£:app ï¿½ï¿½ï¿½ï¿½Å°
 	client_secret	varchar2(100) not null,
 	userid			varchar2(20) NOT NULL,
     client_name    	varchar2(300) not null,	
-    description 	varchar2(400) not null,	--¼³¸í
+    description 	varchar2(400) not null,	--ï¿½ï¿½ï¿½ï¿½
     client_url		varchar2(300) not null,	--application url
-    client_type		varchar2(20) not null,	--À¯Çü ¿¹:À¥¼­ºñ½º(W), Desktop(D), Mobile(M)
-   	scope  			varchar2(300),			--±ÇÇÑ:ÄÞ¸¶·Î ±¸ºÐÇÏ¿© ¿©·¯°³ ÀÔ·Â°¡´É. ±ÇÇÑÀº Á÷Á¢ ÇÁ·Î¹ÙÀÌ´õ°¡ Á¤ÀÇÇÔ.
+    client_type		varchar2(20) not null,	--ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(W), Desktop(D), Mobile(M)
+   	scope  			varchar2(300),			--ï¿½ï¿½ï¿½ï¿½:ï¿½Þ¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·Â°ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¹ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
     redirect_uri	varchar2(400)  not null,	--redirect uri
-    regdate 		date 	default sysdate			--µî·Ï³¯Â¥
+    regdate 		date 	default sysdate			--ï¿½ï¿½ï¿½Ï³ï¿½Â¥
 );
 
 alter table tbl_client add constraint pk_client  primary key (client_id);
@@ -37,29 +37,29 @@ CREATE TABLE tbl_token
 	access_token		varchar2(200) unique,
 	refresh_token		varchar2(200) unique,
 	token_type			varchar2(30),				--bearer,jwt,mac
-	scope				varchar2(100),				--±ÇÇÑ : ÀÐ±â,ÀÐ±â¾²±â µîÀ» °ø¹éÀ¸·Î ±¸ºÐÇÏ¿© »ç¿ëÇÏ´Â °ÍÀÌ Ç¥ÁØ
-	code				varchar2(200),				--serverFlow»óÀÇ code°ª(verifier)
+	scope				varchar2(100),				--ï¿½ï¿½ï¿½ï¿½ : ï¿½Ð±ï¿½,ï¿½Ð±â¾²ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
+	code				varchar2(200),				--serverFlowï¿½ï¿½ï¿½ï¿½ codeï¿½ï¿½(verifier)
 	state				varchar2(100),
 	client_type			varchar2(20),
-	created_at			number(30),				--access token »ý¼º½ÃÀÇ timestamp(1970.1.1ºÎÅÍ ÇöÀç±îÁö Èå¸¥ ÃÊ)
-	created_rt			number(30),						--refresh token »ý¼º½ÃÀÇ timestamp
-	expires_in			number(30)						--ÅäÅ« »ý¼º½Ã¿¡ ºÎ¿©ÇÏ´Â À¯È¿±â°£ 3600
+	created_at			number(30),				--access token ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ timestamp(1970.1.1ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½å¸¥ ï¿½ï¿½)
+	created_rt			number(30),						--refresh token ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ timestamp
+	expires_in			number(30)						--ï¿½ï¿½Å« ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½Î¿ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½È¿ï¿½â°£ 3600
 );
 
-alter table tbl_token add constraint pk_token  primary key (client_id, userid);
+alter table tbl_token add constraint pk_token  primary key (client_id, userid,access_token);
 alter table tbl_token add constraint fk_token_users foreign key (userid) references tbl_users (userid);
 alter table tbl_token add constraint fk_token_client foreign key (client_id) references tbl_client (client_id);
 
 INSERT INTO tbl_users (userid, password, username, userno) 
-  values ('gdhong', 'gdhong', 'È«±æµ¿', 1000001);
+  values ('gdhong', 'gdhong', 'È«ï¿½æµ¿', 1000001);
 INSERT INTO tbl_users (userid, password, username, userno) 
-  values ('arnold', 'arnold', '¾Æ³îµå ½´¿ÐÁ¦³×°Å', 1000002);
+  values ('arnold', 'arnold', 'ï¿½Æ³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½', 1000002);
 INSERT INTO tbl_users (userid, password, username, userno) 
   values ('t1000', 't1000', 'T-1000', 1000003);
 commit;
 
 
--- 1970.1.1 ºÎÅÍ ÇöÀç±îÁö Èå¸¥ ½Ã°£°ª °è»êÀ» À§ÇÑ ÇÔ¼ö µî·Ï
+-- 1970.1.1 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½å¸¥ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½
 CREATE OR REPLACE FUNCTION GET_TIMESTAMP
 (                 
    ts	  IN  TIMESTAMP WITH LOCAL TIME ZONE
