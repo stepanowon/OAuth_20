@@ -4,6 +4,8 @@ OAuth_20
 Samples for OAuth 2.0 Provider &amp; Client 
 
 OAuth2 Provider & Consumer Sample입니다.
+http://tools.ietf.org/html/draft-ietf-oauth-v2-31  을 근거(?)하여 작성하였지만 부족한 부분이 많습니다.
+
 궁금하신 점은 stepanowon@hotmail.com 으로 문의해주세요.
 
 
