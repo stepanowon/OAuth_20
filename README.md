@@ -4,10 +4,15 @@ OAuth_20
 Samples for OAuth 2.0 Provider &amp; Client 
 
 OAuth2 Provider & Consumer Sample입니다.
-http://tools.ietf.org/html/draft-ietf-oauth-v2-31  을 근거(?)하여 작성하였지만 부족한 부분이 많습니다.
+https://tools.ietf.org/html/rfc6749  를 근거하여 작성하였습니다.
+이 코드는 샘플 코드입니다. 상업적인 목적으로 사용하지 말아주세요. 스터디 용도로만 사용해주세요.
+환경설정에 대한 질문, 코드 자체에 대한 질문은 받지 않겠습니다.
+OAuth2.0에 대한 질문도 위의 RFC 문서를 직접 읽어보세요.
 
-궁금하신 점은 stepanowon@hotmail.com 으로 문의해주세요.
+상업적인 목적이 아니라면 이용가능한 코드입니다.
+상업적인 목적으로는 사용하지 말아주세요.
 
+이 코드의 저작권은 stepanowon@hotmail.com 에게 있습니다.
 
 A. environment
 
