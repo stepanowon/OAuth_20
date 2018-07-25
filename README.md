@@ -16,7 +16,7 @@ OAuth2.0에 대한 질문도 위의 RFC 문서를 직접 읽어보세요.
 
 A. environment
 
-  - Oracle 10g Express
+  - Oracle 10g Express(H2 Database 사용가능)
   - Java 1.6 + Spring 3.1 + Eclipse(indigo) + Maven + iBatis 2.0 + Tomcat 6.0(HTTP Port 8000)
 
 B. project
