@@ -35,35 +35,35 @@ public class OAuth2Controller {
 	@Autowired
 	private OAuth2AccessTokenService tokenService;
 	
-//****Utility ¸Ş¼­µå ½ÃÀÛ
-	//Token °ªÀ» ºñ·ÔÇÑ timestamp Á¤º¸¸¦ »ı¼ºÇÏ¿© Å×ÀÌºí¿¡ Ãß°¡ÇÔ.
+//****Utility ë©”ì„œë“œ ì‹œì‘
+	//Token ê°’ì„ ë¹„ë¡¯í•œ timestamp ì •ë³´ë¥¼ ìƒì„±í•˜ì—¬ í…Œì´ë¸”ì— ì¶”ê°€í•¨.
 	private TokenVO createTokenToTable(RequestAuthVO rVO, UserVO uVO, ClientVO cVO) throws OAuth2Exception {
 		TokenVO tVO;
 		try {
-			//5.1 Access Token ·£´ıÇÏ°Ô »ı¼ºÇÏ¿© TokenVO »ı¼ºÇÏ°í ÀúÀå
-			//TODO ¸ñ¿äÀÏ : TOKEN °ª ¼³Á¤ÇÏ°í DB¿¡ ÀúÀå (sqlmap, dao, controller)
+			//5.1 Access Token ëœë¤í•˜ê²Œ ìƒì„±í•˜ì—¬ TokenVO ìƒì„±í•˜ê³  ì €ì¥
+			//TODO ëª©ìš”ì¼ : TOKEN ê°’ ì„¤ì •í•˜ê³  DBì— ì €ì¥ (sqlmap, dao, controller)
 			tVO = new TokenVO();
 			tVO.setClient_id(rVO.getClient_id());
 			
-			//½ÂÀÎÇÑ »ç¿ëÀÚ
+			//ìŠ¹ì¸í•œ ì‚¬ìš©ì
 			tVO.setUserid(uVO.getUserid());
 			tVO.setToken_type(OAuth2Constant.TOKEN_TYPE_BEARER);
 			tVO.setScope(rVO.getScope());
 			
-			//expires_in°ú refresh_tokenÀÇ »ç¿ë ¿©ºÎ´Â °¢ Á¶Á÷ÀÌ °áÁ¤ÇÑ´Ù. 
+			//expires_inê³¼ refresh_tokenì˜ ì‚¬ìš© ì—¬ë¶€ëŠ” ê° ì¡°ì§ì´ ê²°ì •í•œë‹¤. 
 			tVO.setExpires_in(OAuth2Constant.EXPIRES_IN_VALUE);
 			tVO.setRefresh_token(OAuth2Util.generateToken());
 			tVO.setCode(OAuth2Util.generateToken());
 			tVO.setClient_type(cVO.getClient_type());
 			
 			tVO.setAccess_token(OAuth2Util.generateToken());
-			//»ı¼º ½Ã°£À» °è»êÀ» ¿ëÀÌÇÏ°Ô ÇÏ±â À§ÇØ Å¸ÀÓ½ºÅÆÇÁ ÇüÅÂ·Î ÀúÀå
+			//ìƒì„± ì‹œê°„ì„ ê³„ì‚°ì„ ìš©ì´í•˜ê²Œ í•˜ê¸° ìœ„í•´ íƒ€ì„ìŠ¤íƒ¬í”„ í˜•íƒœë¡œ ì €ì¥
 			long currentTimeStamp = OAuth2Util.getCurrentTimeStamp();
 			tVO.setCreated_at(currentTimeStamp);
 			tVO.setCreated_rt(currentTimeStamp);
 			
 			System.out.println(tVO);
-			//tbl_TokenÅ×ÀÌºí¿¡ Ãß°¡
+			//tbl_Tokení…Œì´ë¸”ì— ì¶”ê°€
 			dao.createToken(tVO);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -73,7 +73,7 @@ public class OAuth2Controller {
 		return tVO;
 	}
 	
-	//Access ÅäÅ«À» refreshÇÔ.
+	//Access í† í°ì„ refreshí•¨.
 	private TokenVO refreshToken(String clientRefreshToken) throws OAuth2Exception {
 		TokenVO tempVO = new TokenVO();
 		tempVO.setRefresh_token(clientRefreshToken);
@@ -101,7 +101,7 @@ public class OAuth2Controller {
 		
 		return tVO;
 	}
-//****Utility ¸Ş¼­µå ³¡	
+//****Utility ë©”ì„œë“œ ë	
 	
 	@RequestMapping(value = "auth", method = RequestMethod.GET)
 	public ModelAndView authorize(RequestAuthVO vo, HttpServletResponse response,
@@ -111,16 +111,16 @@ public class OAuth2Controller {
 		HttpSession session = request.getSession();
 		UserVO loginnedVO = (UserVO) session.getAttribute("userVO");
 
-		//1. ÇöÀç ·Î±×ÀÎÇÑ »óÅÂÀÎÁö È®ÀÎ
+		//1. í˜„ì¬ ë¡œê·¸ì¸í•œ ìƒíƒœì¸ì§€ í™•ì¸
 		if (loginnedVO != null) {
-			// ÀÌ¹Ì ·Î±×ÀÎÇÑ »óÈ²ÀÌ¸é ½ÂÀÎ¹öÆ°¸¸ º¸¿©ÁÖµµ·Ï ÇØ¾ß ÇÔ.
+			// ì´ë¯¸ ë¡œê·¸ì¸í•œ ìƒí™©ì´ë©´ ìŠ¹ì¸ë²„íŠ¼ë§Œ ë³´ì—¬ì£¼ë„ë¡ í•´ì•¼ í•¨.
 			mav.addObject("isloginned", true);
 		} else {
 			mav.addObject("isloginned", false);
 		}
 		
 		System.out.println("## server flow 2.1");
-		//2.1 Àü´ŞµÈ client_id°¡ À¯È¿ÇÑ  client_idÀÎÁö È®ÀÎ
+		//2.1 ì „ë‹¬ëœ client_idê°€ ìœ íš¨í•œ  client_idì¸ì§€ í™•ì¸
 		ClientVO clientVO1 = new ClientVO();
 		clientVO1.setClient_id(vo.getClient_id());
 		ClientVO cVO=null;
@@ -138,20 +138,20 @@ public class OAuth2Controller {
 		System.out.println("## server flow 2.2");
 		System.out.println(vo.getResponse_type());
 		
-		//2.2 response_typeÀÌ codeÀÏ ¶§´Â client_secretÀÌ ÀÏÄ¡ÇÏ´ÂÁöµµ È®ÀÎÇÔ.
+		//2.2 response_typeì´ codeì¼ ë•ŒëŠ” client_secretì´ ì¼ì¹˜í•˜ëŠ”ì§€ë„ í™•ì¸í•¨.
 		if (!vo.getResponse_type().equals(OAuth2Constant.RESPONSE_TYPE_CODE) && 
 			!vo.getResponse_type().equals(OAuth2Constant.RESPONSE_TYPE_TOKEN)	) {
 			throw new OAuth2Exception(401, OAuth2ErrorConstant.UNSUPPORTED_RESPONSE_TYPE);
 		}
 		
 		System.out.println("## server flow 3");
-		//3. ¿äÃ»À¸·Î Àü´ŞµÈ scope°¡ client µî·Ï½Ã Æ÷ÇÔµÈ scope¿¡ Á¸ÀçÇÏ´ÂÁö ¿©ºÎ È®ÀÎ
+		//3. ìš”ì²­ìœ¼ë¡œ ì „ë‹¬ëœ scopeê°€ client ë“±ë¡ì‹œ í¬í•¨ëœ scopeì— ì¡´ì¬í•˜ëŠ”ì§€ ì—¬ë¶€ í™•ì¸
 		if (!OAuth2Scope.isScopeValid(vo.getScope(), cVO.getScope())) {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.INVALID_SCOPE);
 		}
 		
 		System.out.println("## server flow 4");
-		//4. grant_typeÀÌ À¯È¿ÇÑÁö È®ÀÎ
+		//4. grant_typeì´ ìœ íš¨í•œì§€ í™•ì¸
 		String gt = vo.getResponse_type();
 		if (!gt.equals(OAuth2Constant.RESPONSE_TYPE_CODE) 
 				&& !gt.equals(OAuth2Constant.RESPONSE_TYPE_TOKEN)) {
@@ -160,24 +160,24 @@ public class OAuth2Controller {
 		}
 
 		System.out.println("## server flow 5");
-		//5 ÃÖÁ¾ÀûÀ¸·Î À¯È¿ÇÏ´Ù¸é auth/auth.jsp ¸¦ º¸¿©ÁÜ. 
+		//5 ìµœì¢…ì ìœ¼ë¡œ ìœ íš¨í•˜ë‹¤ë©´ auth/auth.jsp ë¥¼ ë³´ì—¬ì¤Œ. 
 		mav.addObject("requestAuthVO", vo);
 		mav.addObject("clientVO", cVO);
 		mav.setViewName("auth/auth");
 		return mav;
 	}
 	
-	//»ç¿ëÀÚ°¡ ½ÂÀÎ ¶Ç´Â °ÅºÎ ¹öÆ°À» Å¬¸¯ÇÏ´Â °æ¿ì
+	//ì‚¬ìš©ìê°€ ìŠ¹ì¸ ë˜ëŠ” ê±°ë¶€ ë²„íŠ¼ì„ í´ë¦­í•˜ëŠ” ê²½ìš°
 	@RequestMapping(value = "auth", method = RequestMethod.POST)
 	public String authorizePost(Model model, RequestAuthVO rVO, HttpServletRequest request, HttpServletResponse response) throws OAuth2Exception {
-		//0. request °ª ¾ò¾î³»±â
+		//0. request ê°’ ì–»ì–´ë‚´ê¸°
 		String isAllow = request.getParameter("isallow");
 		String userid = request.getParameter("userid");
 		String password = request.getParameter("password");
-		
-		//0.1 ·Î±×ÀÎÇÑ »ç¿ëÀÚ¸é ÇöÀç»ç¿ëÀÚ¿Í ÇØ´ç Å¬¶óÀÌ¾ğÆ®¸¦ À§ÇÑ TokenÀ» »ı¼ºÇØ¾ß ÇÔ.
-		//0.2 userid,password·Î »ç¿ëÀÚ Á¤º¸ Á¶È¸--> ·Î±×ÀÎÃ³¸®--> ÅäÅ« »ı¼º
-		//0.3 »ç¿ëÀÚ°¡ ½ÂÀÎÀ» °ÅºÎÇÏ¿´´Ù¸é »ç¿ëÀÚ¿¡°Ô ¾Ë·ÁÁÖ°í ·Î±×ÀÎÈ­¸éÀ¸·Î µ¹¾Æ°¨.
+		System.out.println("@@@## password : " + password);
+		//0.1 ë¡œê·¸ì¸í•œ ì‚¬ìš©ìë©´ í˜„ì¬ì‚¬ìš©ìì™€ í•´ë‹¹ í´ë¼ì´ì–¸íŠ¸ë¥¼ ìœ„í•œ Tokenì„ ìƒì„±í•´ì•¼ í•¨.
+		//0.2 userid,passwordë¡œ ì‚¬ìš©ì ì •ë³´ ì¡°íšŒ--> ë¡œê·¸ì¸ì²˜ë¦¬--> í† í° ìƒì„±
+		//0.3 ì‚¬ìš©ìê°€ ìŠ¹ì¸ì„ ê±°ë¶€í•˜ì˜€ë‹¤ë©´ ì‚¬ìš©ìì—ê²Œ ì•Œë ¤ì£¼ê³  ë¡œê·¸ì¸í™”ë©´ìœ¼ë¡œ ëŒì•„ê°.
 		if (!isAllow.equals("true")) {
 			return "auth/auth_deny";
 		}
@@ -187,6 +187,8 @@ public class OAuth2Controller {
 			UserVO uVOTemp = new UserVO(userid, password, "", 0);
 			try {
 				uVO = dao.loginProcess(uVOTemp);
+				uVO.setPassword(password);
+				System.out.println(uVO);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -194,11 +196,12 @@ public class OAuth2Controller {
 			}
 		} else if (request.getSession().getAttribute("userVO") != null){
 			uVO = (UserVO)request.getSession().getAttribute("userVO");
+			System.out.println(uVO.toString());
 		} else {
 			throw new OAuth2Exception(401, OAuth2ErrorConstant.UNAUTHORIZED_CLIENT);
 		}
 		
-		// 1. client_id Á¸Àç¿©ºÎ È®ÀÎ
+		// 1. client_id ì¡´ì¬ì—¬ë¶€ í™•ì¸
 		ClientVO cVOTemp = new ClientVO();
 		cVOTemp.setClient_id(rVO.getClient_id());
 		System.out.println("## rVO ClientID : " + rVO.getClient_id());
@@ -214,32 +217,32 @@ public class OAuth2Controller {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.UNAUTHORIZED_CLIENT);
 		}
 		
-		// 2. scope Æ÷ÇÔ¿©ºÎ È®ÀÎ
+		// 2. scope í¬í•¨ì—¬ë¶€ í™•ì¸
 		if (!OAuth2Scope.isScopeValid(rVO.getScope(), cVO.getScope())) {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.INVALID_SCOPE);
 		}
 
-		// 3. redirect_uri ÀÏÄ¡¿©ºÎ È®ÀÎ
+		// 3. redirect_uri ì¼ì¹˜ì—¬ë¶€ í™•ì¸
 		if (!rVO.getRedirect_uri().equals(cVO.getRedirect_uri())) {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.NOT_MATCH_REDIRECT_URI);
 		}
 
-		//4. token, code »ı¼ºÇÏ¿© Å×ÀÌºí¿¡ Ãß°¡, 
-		//   refresh tokenÀ» »ç¿ëÇÏÁö ¾ÊÀ» °æ¿ì´Â Å×ÀÌºí¿¡ ÀúÀåµÈ °ª¿¡¼­ code ÇÊµå°ª¸¸ »ç¿ëÇÔ
+		//4. token, code ìƒì„±í•˜ì—¬ í…Œì´ë¸”ì— ì¶”ê°€, 
+		//   refresh tokenì„ ì‚¬ìš©í•˜ì§€ ì•Šì„ ê²½ìš°ëŠ” í…Œì´ë¸”ì— ì €ì¥ëœ ê°’ì—ì„œ code í•„ë“œê°’ë§Œ ì‚¬ìš©í•¨
 		TokenVO tVO = createTokenToTable(rVO, uVO, cVO);
 		
-		// 5. response_type È®ÀÎÇÏ°í code, tokenÀÎ °æ¿ì¿¡ µû¶ó °¢±â ´Ù¸¥ Èå¸§ Ã³¸®
+		// 5. response_type í™•ì¸í•˜ê³  code, tokenì¸ ê²½ìš°ì— ë”°ë¼ ê°ê¸° ë‹¤ë¥¸ íë¦„ ì²˜ë¦¬
 		String response_type = rVO.getResponse_type();
 		String redirect = "";
 		if (response_type.equals(OAuth2Constant.RESPONSE_TYPE_CODE)) {
-			//6.1 4¹ø ´Ü°è¿¡¼­ »ı¼ºµÈ °ªµé Áß code °ªÀ» ÀÌ¿ëÇØ redirect ÇÔ.
+			//6.1 4ë²ˆ ë‹¨ê³„ì—ì„œ ìƒì„±ëœ ê°’ë“¤ ì¤‘ code ê°’ì„ ì´ìš©í•´ redirect í•¨.
 			// redirect_uri?code=XXXXXXXXX
 			redirect = "redirect:"+ rVO.getRedirect_uri() + "?code=" + tVO.getCode();
 			if (rVO.getState() != null) {
 				redirect += "&state=" + rVO.getState(); 
 			}
 		} else if (response_type.equals(OAuth2Constant.RESPONSE_TYPE_TOKEN)) {
-			//useragent Èå¸§
+			//useragent íë¦„
 			ResponseAccessTokenVO tokenVO = null;
 
 			if (OAuth2Constant.USE_REFRESH_TOKEN) {
@@ -247,9 +250,9 @@ public class OAuth2Controller {
 						tVO.getAccess_token(), tVO.getToken_type(), 
 						tVO.getExpires_in(), tVO.getRefresh_token(), rVO.getState(), tVO.getCreated_at());				
 			} else {
-				//OAuth2AccessToken Å¬·¡½º ±â´ÉÀ» ÀÌ¿ëÇØ Á¤ÇØÁø ±ÔÄ¢¿¡ ÀÇÇØ »ı¼ºÇÔ.
+				//OAuth2AccessToken í´ë˜ìŠ¤ ê¸°ëŠ¥ì„ ì´ìš©í•´ ì •í•´ì§„ ê·œì¹™ì— ì˜í•´ ìƒì„±í•¨.
 				tokenVO = new ResponseAccessTokenVO(
-						this.tokenService.generateAccessToken(cVO.getClient_id(), cVO.getClient_secret(), uVO.getUserid(), password), 
+						this.tokenService.generateAccessToken(cVO.getClient_id(), cVO.getClient_secret(), uVO.getUserid(), uVO.getPassword()), 
 						OAuth2Constant.TOKEN_TYPE_BEARER, 0, null, rVO.getState(), tVO.getCreated_at());
 				tokenVO.setExpires_in(0);
 				tokenVO.setRefresh_token(null);
@@ -265,15 +268,15 @@ public class OAuth2Controller {
 	}
 	
 	
-	//access_token Ã³¸®, refresh_token Ã³¸®
-	//grant_typeÀÌ password ¿Í client_credentials ÀÎ °æ¿ì´Â if ¹® ºí·°¸¸ ÀÛ¼ºÇÏ¿´À½. ÃßÈÄ ÀÛ¼ºÇØ¾ß ÇÔ.  
+	//access_token ì²˜ë¦¬, refresh_token ì²˜ë¦¬
+	//grant_typeì´ password ì™€ client_credentials ì¸ ê²½ìš°ëŠ” if ë¬¸ ë¸”ëŸ­ë§Œ ì‘ì„±í•˜ì˜€ìŒ. ì¶”í›„ ì‘ì„±í•´ì•¼ í•¨.  
 	@RequestMapping(value = "token")
 	public String accessToken(RequestAccessTokenVO ratVO, Model model, HttpServletRequest request) throws OAuth2Exception {
 		
 		String json = "";
 		
-		//grant typeÀÌ ¹«¾ùÀÌ³Ä¿¡ µû¶ó °¢±â ´Ù¸¥ Ã³¸®
-		//password, client_credentialÀº ¹Ì±¸Çö.. ÃßÈÄ ±¸Çö ¿ä¸ÁµÊ.
+		//grant typeì´ ë¬´ì—‡ì´ëƒì— ë”°ë¼ ê°ê¸° ë‹¤ë¥¸ ì²˜ë¦¬
+		//password, client_credentialì€ ë¯¸êµ¬í˜„.. ì¶”í›„ êµ¬í˜„ ìš”ë§ë¨.
 		System.out.println("### token flow 1");
 		System.out.println("### grant_type : " + ratVO.getGrant_type());
 		
@@ -281,13 +284,13 @@ public class OAuth2Controller {
 			ResponseAccessTokenVO resVO = accessTokenServerFlow(ratVO, request);
 			json = OAuth2Util.getJSONFromObject(resVO);
 		} else if (ratVO.getGrant_type().equals(OAuth2Constant.GRANT_TYPE_PASSWORD)) {
-			//Â÷ÈÄ ±¸ÇöÇÒ °Í
+			//ì°¨í›„ êµ¬í˜„í•  ê²ƒ
 			throw new OAuth2Exception(500, OAuth2ErrorConstant.UNSUPPORTED_RESPONSE_TYPE);
 		} else if (ratVO.getGrant_type().equals(OAuth2Constant.GRANT_TYPE_CLIENT_CREDENTIALS)) {
-			//Â÷ÈÄ ±¸ÇöÇÒ °Í
+			//ì°¨í›„ êµ¬í˜„í•  ê²ƒ
 			throw new OAuth2Exception(500, OAuth2ErrorConstant.UNSUPPORTED_RESPONSE_TYPE);
 		} else if (ratVO.getGrant_type().equals(OAuth2Constant.GRANT_TYPE_REFRESH_TOKEN)) {
-			//refresh token »ç¿ë ¿©ºÎ¿¡ µû¶ó °ªÀÌ ´Ş¶óÁü.
+			//refresh token ì‚¬ìš© ì—¬ë¶€ì— ë”°ë¼ ê°’ì´ ë‹¬ë¼ì§.
 			if (OAuth2Constant.USE_REFRESH_TOKEN) {
 				ResponseAccessTokenVO resVO = refreshTokenFlow(ratVO, request);
 				json = OAuth2Util.getJSONFromObject(resVO);
@@ -301,22 +304,22 @@ public class OAuth2Controller {
 		return "json/json";
 	}
 
-	//grant_typeÀÌ authorization_codeÀÏ ¶§ 
+	//grant_typeì´ authorization_codeì¼ ë•Œ 
 	private ResponseAccessTokenVO accessTokenServerFlow(RequestAccessTokenVO ratVO, HttpServletRequest request) throws OAuth2Exception {
 		
 		
-		//GET ¹æ½ÄÀÏ ¶§´Â Client ID¿Í Client SecretÀº Authorization Header¸¦ ÅëÇØ Àü´ŞµÇ¾î¾ß ÇÔ.
+		//GET ë°©ì‹ì¼ ë•ŒëŠ” Client IDì™€ Client Secretì€ Authorization Headerë¥¼ í†µí•´ ì „ë‹¬ë˜ì–´ì•¼ í•¨.
 		System.out.println("### token flow 2");
 		if (request.getMethod().equalsIgnoreCase("GET")) {
 			String authHeader = (String)request.getHeader("Authorization");
 			if (authHeader == null || authHeader.equals("")) {
 				throw new OAuth2Exception(400, OAuth2ErrorConstant.INVALID_PARAMETER);
 			}
-			//Basic ÀÎÁõ Çì´õ ÆÄ½Ì
+			//Basic ì¸ì¦ í—¤ë” íŒŒì‹±
 			OAuth2Util.parseBasicAuthHeader(authHeader, ratVO);
 		}
 		
-		//1. ClientID, Secret ¸ğµÎ Àü´ŞµÇ¾ú´ÂÁö ¿©ºÎ --> Á¸Àç ¿©ºÎ È®ÀÎ
+		//1. ClientID, Secret ëª¨ë‘ ì „ë‹¬ë˜ì—ˆëŠ”ì§€ ì—¬ë¶€ --> ì¡´ì¬ ì—¬ë¶€ í™•ì¸
 		System.out.println("### token flow 3");
 		if (ratVO.getClient_id() ==null || ratVO.getClient_secret() == null ) {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.INVALID_PARAMETER);
@@ -333,19 +336,19 @@ public class OAuth2Controller {
 			throw new OAuth2Exception(500, OAuth2ErrorConstant.SERVER_ERROR);
 		}
 		
-		//1.2 client Á¸Àç ¿©ºÎ È®ÀÎ
+		//1.2 client ì¡´ì¬ ì—¬ë¶€ í™•ì¸
 		System.out.println("### token flow 4");
 		if (cVO == null) {
 			throw new OAuth2Exception(401, OAuth2ErrorConstant.UNAUTHORIZED_CLIENT);
 		}
 		
-		//2. redirect_uri ÀÏÄ¡ ¿©ºÎ È®ÀÎ
+		//2. redirect_uri ì¼ì¹˜ ì—¬ë¶€ í™•ì¸
 		System.out.println("### token flow 5");
 		if (!ratVO.getRedirect_uri().equals(cVO.getRedirect_uri())) {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.NOT_MATCH_REDIRECT_URI);
 		}
 		
-		//3. code°ª ÀÏÄ¡ ¿©ºÎ È®ÀÎ
+		//3. codeê°’ ì¼ì¹˜ ì—¬ë¶€ í™•ì¸
 		System.out.println("### token flow 6");
 		if (ratVO.getCode() == null) {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.INVALID_PARAMETER);
@@ -365,18 +368,18 @@ public class OAuth2Controller {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.INVALID_CODE);
 		}
 		
-		//4. expireµÇ¾ú´ÂÁö ¿©ºÎ È®ÀÎ, refresh token »ç¿ë ¿©ºÎ¿¡ µû¶ó °áÁ¤ÇÔ.
+		//4. expireë˜ì—ˆëŠ”ì§€ ì—¬ë¶€ í™•ì¸, refresh token ì‚¬ìš© ì—¬ë¶€ì— ë”°ë¼ ê²°ì •í•¨.
 		if (OAuth2Constant.USE_REFRESH_TOKEN) {
 			System.out.println("### token flow 7");
 			long expires = tVO.getCreated_at() + tVO.getExpires_in();
 			if (System.currentTimeMillis() > expires) {
-				//ÅäÅ« »ı¼ºµÇ°í ÇÑÂü µÚ¿¡ code·Î access tokenÀ» ¿äÃ»ÇÏ´Â °ÍÀº ±İÁö
+				//í† í° ìƒì„±ë˜ê³  í•œì°¸ ë’¤ì— codeë¡œ access tokenì„ ìš”ì²­í•˜ëŠ” ê²ƒì€ ê¸ˆì§€
 				throw new OAuth2Exception(400, OAuth2ErrorConstant.EXPIRED_TOKEN);
 			}
 		}	
 		
-		//5. Àü´Ş¹ŞÀº state°ª ±×´ë·Î Àü´Ş(CSRF °ø°İ ¹æÁö¿ë)
-		//6. ResponseAccessToken°´Ã¼ »ı¼º --> json Æ÷¸Ë ÀÀ´ä
+		//5. ì „ë‹¬ë°›ì€ stateê°’ ê·¸ëŒ€ë¡œ ì „ë‹¬(CSRF ê³µê²© ë°©ì§€ìš©)
+		//6. ResponseAccessTokenê°ì²´ ìƒì„± --> json í¬ë§· ì‘ë‹µ
 		System.out.println("### token flow 9");
 		ResponseAccessTokenVO resVO = new ResponseAccessTokenVO();
 
@@ -388,8 +391,8 @@ public class OAuth2Controller {
 			resVO.setExpires_in(tVO.getExpires_in());
 			resVO.setRefresh_token(tVO.getRefresh_token());
 		} else {
-			//6.1. password¸¦ È®º¸ÇÏ±â À§ÇØ UserVO °´Ã¼ È¹µæ
-			//     ResponsTokenÀ» »ı¼ºÇÏ°í ³ª¸é token Å×ÀÌºíÀÇ ·¹ÄÚµå »èÁ¦
+			//6.1. passwordë¥¼ í™•ë³´í•˜ê¸° ìœ„í•´ UserVO ê°ì²´ íšë“
+			//     ResponsTokenì„ ìƒì„±í•˜ê³  ë‚˜ë©´ token í…Œì´ë¸”ì˜ ë ˆì½”ë“œ ì‚­ì œ
 			UserVO uVOTemp = new UserVO();
 			uVOTemp.setUserid(tVO.getUserid());
 			UserVO uVO = null;
@@ -404,7 +407,7 @@ public class OAuth2Controller {
 				throw new OAuth2Exception(500, OAuth2ErrorConstant.INVALID_USER);
 			}
 			
-			//token Å×ÀÌºí ·¹ÄÚµå »èÁ¦
+			//token í…Œì´ë¸” ë ˆì½”ë“œ ì‚­ì œ
 			try {
 				dao.deleteToken(tVO);
 			} catch (Exception e) {
@@ -419,25 +422,25 @@ public class OAuth2Controller {
 		
 	}
 	
-	//grant_typeÀÌ authorization_codeÀÏ ¶§ 
+	//grant_typeì´ authorization_codeì¼ ë•Œ 
 	private ResponseAccessTokenVO refreshTokenFlow(RequestAccessTokenVO ratVO, HttpServletRequest request) throws OAuth2Exception {
-		//1. Àü´ŞµÈ refresh Token°ú 
-		//GET ¹æ½ÄÀÏ ¶§´Â Client ID¿Í Client SecretÀº Authorization Header¸¦ ÅëÇØ Àü´ŞµÇ¾î¾ß ÇÔ.
+		//1. ì „ë‹¬ëœ refresh Tokenê³¼ 
+		//GET ë°©ì‹ì¼ ë•ŒëŠ” Client IDì™€ Client Secretì€ Authorization Headerë¥¼ í†µí•´ ì „ë‹¬ë˜ì–´ì•¼ í•¨.
 		if (request.getMethod().equalsIgnoreCase("GET")) {
 			String authHeader = (String)request.getHeader("Authorization");
 			if (authHeader == null || authHeader.equals("")) {
 				throw new OAuth2Exception(400, OAuth2ErrorConstant.INVALID_PARAMETER);
 			}
-			//Basic ÀÎÁõ Çì´õ ÆÄ½Ì
+			//Basic ì¸ì¦ í—¤ë” íŒŒì‹±
 			OAuth2Util.parseBasicAuthHeader(authHeader, ratVO);
 		}
 		
-		//2. ClientID, Secret ¸ğµÎ Àü´ŞµÇ¾ú´ÂÁö ¿©ºÎ --> Á¸Àç ¿©ºÎ È®ÀÎ
+		//2. ClientID, Secret ëª¨ë‘ ì „ë‹¬ë˜ì—ˆëŠ”ì§€ ì—¬ë¶€ --> ì¡´ì¬ ì—¬ë¶€ í™•ì¸
 		if (ratVO.getClient_id() ==null || ratVO.getClient_secret() == null ) {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.INVALID_PARAMETER);
 		}
 
-		//3. clientID ¿Í client_secretÀÇ ÀÏÄ¡¿©ºÎ
+		//3. clientID ì™€ client_secretì˜ ì¼ì¹˜ì—¬ë¶€
 		ClientVO cVOTemp = new ClientVO();
 		cVOTemp.setClient_id(ratVO.getClient_id());
 		ClientVO cVO = null;
@@ -455,7 +458,7 @@ public class OAuth2Controller {
 			throw new OAuth2Exception(500, OAuth2ErrorConstant.UNAUTHORIZED_CLIENT);
 		}
 		
-		//4. refresh tokenÀÇ ÀÏÄ¡ ¿©ºÎ
+		//4. refresh tokenì˜ ì¼ì¹˜ ì—¬ë¶€
 		if (ratVO.getRefresh_token() == null) {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.INVALID_PARAMETER);
 		}
@@ -474,8 +477,8 @@ public class OAuth2Controller {
 			throw new OAuth2Exception(400, OAuth2ErrorConstant.INVALID_TOKEN);
 		}
 		
-		//5. TokenVOÀÇ accessToken °»½Å --> DB ¾÷µ¥ÀÌÆ® --> 
-		// --> refreshToken °ª ¾øÀÌ  ResponseAccessTokenVO°´Ã¼ »ı¼º --> JSON Æ÷¸ËÀ¸·Î ÀÀ´ä
+		//5. TokenVOì˜ accessToken ê°±ì‹  --> DB ì—…ë°ì´íŠ¸ --> 
+		// --> refreshToken ê°’ ì—†ì´  ResponseAccessTokenVOê°ì²´ ìƒì„± --> JSON í¬ë§·ìœ¼ë¡œ ì‘ë‹µ
 		tVO.setAccess_token(OAuth2Util.generateToken());
 		tVO.setCreated_at(OAuth2Util.getCurrentTimeStamp());
 		try {
