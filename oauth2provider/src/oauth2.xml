@@ -10,7 +10,7 @@
 
 	<!--  Login을 위한 Map 시작 -->
 	<select id="login" resultClass="userVO" parameterClass="userVO">
-		SELECT userid, username, userno
+		SELECT userid, username, userno, password
 		FROM tbl_users
 		WHERE userid=#userid# AND password=#password#
 	</select>
